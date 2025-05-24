@@ -1,5 +1,7 @@
 # News Feed Web App
 
+![图片1](https://github.com/user-attachments/assets/d4295914-e1fa-4ef8-86fb-f4fd1401965b)
+
 This is a simple, responsive single-page News Feed application. It dynamically loads and displays news articles from a provided JSON file (`news.json` or `news_updated.json`).
 
 ## Features
@@ -47,8 +49,6 @@ Here are the steps to run the application:
 
 4.  **View the App:**
     Once the server is running, navigate to the local address (like `http://localhost:8000`) in your web browser to view and interact with the News Feed Web App.
-
-![图片1](https://github.com/user-attachments/assets/d4295914-e1fa-4ef8-86fb-f4fd1401965b)
 
 
 
