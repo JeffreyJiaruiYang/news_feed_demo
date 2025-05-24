@@ -1,0 +1,37 @@
+/* Global Styles */
+body {
+    font-family: 'Share', sans-serif; /* 应用 'Share' 字体到整个网页 */
+    font-weight: 400;                 /* 默认使用常规字重 (400) */
+    line-height: 1.6;                 /* 建议设置一个舒适的行高 */
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Share', sans-serif; /* 确保标题也使用 'Share' 字体 */
+    font-weight: 700;                 /* 默认使用粗体字重 (700) - 你已在Google Fonts链接中请求此字重 */
+}
+
+/*
+   如果需要，你可以在这里为Bootstrap组件添加特定的字体覆盖。
+   例如，如果按钮没有继承 'Share' 字体:
+*/
+/*
+.btn {
+    font-family: 'Share', sans-serif;
+}
+*/
+
+/*
+   你还可以为斜体和粗斜体创建实用工具类，
+   因为你在Google Fonts链接中也请求了这些样式:
+*/
+/*
+.font-italic {
+    font-style: italic;
+}
+
+.font-bold-italic {
+    font-style: italic;
+    font-weight: 700;
+}
+*/

@@ -2,8 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarCategoriesElement = document.getElementById('sidebar-categories');
     const mainContentElement = document.getElementById('main-content');
     const navbarBrandLink = document.querySelector('.navbar-brand');
-
-    // --- 修改：修正主导航链接的选择器 ---
     const navHomeLink = document.querySelector('#navbarNav .nav-item:nth-child(1) .nav-link');
     const navAboutLink = document.querySelector('#navbarNav .nav-item:nth-child(2) .nav-link');
     const navContactLink = document.querySelector('#navbarNav .nav-item:nth-child(3) .nav-link');
@@ -20,14 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             allArticlesData = data.articles;
             displayCategories(allArticlesData);
-            
-            // --- 确保 Home 链接被正确选中后才尝试显示文章和更新状态 ---
             if (navHomeLink) {
                 displayArticles(allArticlesData);
-                updateActiveNavLink(navHomeLink); // 页面加载时默认激活 Home
+                updateActiveNavLink(navHomeLink);
             } else {
                 console.error("Home link not found. Check selector.");
-                displayArticles(allArticlesData); // 即使Home链接选择器有问题，也尝试显示文章
+                displayArticles(allArticlesData);
             }
 
         } catch (error) {
@@ -37,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayCategories(articles) {
-        // 清空现有分类，防止重复添加
         sidebarCategoriesElement.innerHTML = '';
         
         const categories = [...new Set(articles.map(article => article.category))];
