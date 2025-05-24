@@ -135,12 +135,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 imageHtml = `<img src="${article.image}" class="card-img-top" alt="${article.title}" style="max-height: 200px; object-fit: cover;">`;
             }
 
+            let tagsHtml = '';
+            if (article.tags && article.tags.length > 0) {
+                tagsHtml = '<div class="mb-3">'; // 用一个 div 包裹标签，并添加底部边距
+                article.tags.forEach(tag => {
+                    // 使用 Bootstrap badge 来创建小按钮样式
+                    tagsHtml += `<span class="badge bg-secondary me-1">${tag}</span>`;
+                });
+                tagsHtml += '</div>';
+            }
+
             card.innerHTML = `
                 ${imageHtml}
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">${article.title}</h5>
                     <p class="card-text"><small class="text-muted">${formatDate(article.date_posted)}</small></p>
                     <p class="card-text">${article.excerpt}</p> 
+                    ${tagsHtml}
                     <a href="#" class="btn btn-primary mt-auto view-article-btn" data-article-id="${article.id}">Read More</a>
                 </div>
             `;
@@ -171,6 +182,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        let tagsHtml = '';
+        if (article.tags && article.tags.length > 0) {
+            tagsHtml = '<div class="my-3">'; // 使用 my-3 添加垂直边距
+            tagsHtml += '<strong>Tags:</strong> '; // 添加一个 "Tags:" 标签头
+            article.tags.forEach(tag => {
+                // 使用与卡片视图相同的 Bootstrap badge 样式
+                tagsHtml += `<span class="badge bg-secondary me-1">${tag}</span>`;
+            });
+            tagsHtml += '</div>';
+        }
+
         mainContentElement.innerHTML = '';                                                              
         const articleWrapper = document.createElement('div');
         articleWrapper.innerHTML = `
@@ -178,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p><small class="text-muted">By ${article.author} on ${formatDate(article.date_posted)}</small></p>
             ${article.image ? `<img src="${article.image}" class="img-fluid mb-3" alt="${article.title}">` : ''}
             <div>${article.full_article.replace(/\n/g, '<br>')}</div> 
+            ${tagsHtml}
             <hr>
             <button class="btn btn-secondary mb-3" id="back-to-articles">Back to Articles</button>
         `;
