@@ -1,14 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 获取 DOM 元素
     const sidebarCategoriesElement = document.getElementById('sidebar-categories');
     const mainContentElement = document.getElementById('main-content');
     const navbarBrandLink = document.querySelector('.navbar-brand');
-    const navHomeLink = document.querySelector('#navbarNav .nav-item:nth-child(1) .nav-link');
-    const navAboutLink = document.querySelector('#navbarNav .nav-item:nth-child(2) .nav-link');
-    const navContactLink = document.querySelector('#navbarNav .nav-item:nth-child(3) .nav-link');
-    const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
+    const navHomeLink = document.getElementById('nav-home');
+    const navAboutLink = document.getElementById('nav-about');
+    const navContactLink = document.getElementById('nav-contact');
+    const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link'); // 获取所有主导航链接
+    const navbarCategoriesElement = document.getElementById('navbar-categories');
 
+    //welcome section
+    const welcomeSection = document.getElementById('welcome-section');
+    const startButton = document.getElementById('start-button');
+
+    // 存储文章数据
     let allArticlesData = [];
 
+    // --- 数据获取 ---
     async function fetchNewsData() {
         try {
             const response = await fetch('news_updated.json');
@@ -17,14 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const data = await response.json();
             allArticlesData = data.articles;
-            displayCategories(allArticlesData);
-            if (navHomeLink) {
-                displayArticles(allArticlesData);
-                updateActiveNavLink(navHomeLink);
-            } else {
-                console.error("Home link not found. Check selector.");
-                displayArticles(allArticlesData);
-            }
+            displayCategories(allArticlesData); // 显示分类
+            showAllArticlesAndActivateHome(); // 默认显示主页内容
 
         } catch (error) {
             console.error("Could not fetch news data:", error);
@@ -32,80 +34,116 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function displayCategories(articles) {
-        sidebarCategoriesElement.innerHTML = '';
-        
-        const categories = [...new Set(articles.map(article => article.category))];
-        
-        const categoriesHeader = document.createElement('h5');
-        categoriesHeader.textContent = 'Categories';
-        sidebarCategoriesElement.appendChild(categoriesHeader);
+    // --- 导航栏与侧边栏 ---
 
-        const ul = document.createElement('ul');
-        ul.className = 'nav flex-column';
-
-        const allArticlesLi = document.createElement('li');
-        allArticlesLi.className = 'nav-item';
-        const allArticlesLink = document.createElement('a');
-        allArticlesLink.className = 'nav-link';
-        allArticlesLink.href = '#';
-        allArticlesLink.textContent = 'All Articles';
-        allArticlesLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            displayArticles(allArticlesData);
-            updateActiveCategoryLink(allArticlesLink);
-            if (navHomeLink) updateActiveNavLink(navHomeLink);
-        });
-        allArticlesLi.appendChild(allArticlesLink);
-        ul.appendChild(allArticlesLi);
-
-        categories.sort().forEach(category => {
-            const li = document.createElement('li');
-            li.className = 'nav-item';
-            const link = document.createElement('a');
-            link.className = 'nav-link';
-            link.href = '#';
-            link.textContent = category;
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                displayArticlesByCategory(category);
-                updateActiveCategoryLink(link);
-                if (navHomeLink) updateActiveNavLink(navHomeLink);
-            });
-            li.appendChild(link);
-            ul.appendChild(li);
-        });
-        sidebarCategoriesElement.appendChild(ul);
-        
-        // 默认激活 "All Articles" 分类链接
-        if (ul.firstChild && ul.firstChild.firstChild) { 
-             updateActiveCategoryLink(ul.firstChild.firstChild);
-        }
-    }
-    
-    function updateActiveCategoryLink(activeLink) {
-        const allCategoryLinks = sidebarCategoriesElement.querySelectorAll('.nav-link');
-        allCategoryLinks.forEach(link => link.classList.remove('active'));
-        if (activeLink) {
-            activeLink.classList.add('active');
+    // 关闭导航栏 (汉堡菜单)
+    function closeNavbar() {
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        const navbarCollapse = document.getElementById('navbarNav');
+        if (navbarCollapse.classList.contains('show')) {
+            navbarToggler.click();
         }
     }
 
+    // 更新主导航链接激活状态
     function updateActiveNavLink(activeLink) {
         mainNavLinks.forEach(link => link.classList.remove('active'));
         if (activeLink) {
             activeLink.classList.add('active');
         }
-        
-        if (activeLink !== navHomeLink) { 
-             updateActiveCategoryLink(null);
-        } else if (sidebarCategoriesElement.querySelector('.nav-link.active') === null && allArticlesData.length > 0) {
-            const allArticlesCatLink = sidebarCategoriesElement.querySelector('.nav-item:first-child .nav-link'); 
-            if (allArticlesCatLink) updateActiveCategoryLink(allArticlesCatLink);
+
+        if (activeLink !== navHomeLink) {
+            updateActiveCategoryLink(null);
+        } else {
+            const isAnyCategoryActive = document.querySelector('#sidebar-categories .nav-link.active, #navbar-categories .nav-link.active');
+            if (isAnyCategoryActive === null && allArticlesData.length > 0) {
+                const allArticlesCatLink = document.querySelector('#sidebar-categories .nav-item:first-child .nav-link');
+                if (allArticlesCatLink) {
+                    updateActiveCategoryLink(allArticlesCatLink);
+                }
+            }
         }
     }
 
-    function formatDate(dateString) { 
+    // 更新分类链接激活状态 (处理两个位置)
+    function updateActiveCategoryLink(activeLink) {
+        const allCategoryLinks = document.querySelectorAll('#sidebar-categories .nav-link, #navbar-categories .nav-link');
+        allCategoryLinks.forEach(link => link.classList.remove('active'));
+
+        if (activeLink) {
+            const linkText = activeLink.textContent;
+            allCategoryLinks.forEach(link => {
+                if (link.textContent === linkText) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    }
+
+    // 显示分类列表 (在侧边栏和导航栏)
+    function displayCategories(articles) {
+        sidebarCategoriesElement.innerHTML = '';
+        navbarCategoriesElement.innerHTML = ''; // 清空两个区域
+
+        const categories = [...new Set(articles.map(article => article.category))];
+
+        function createListContent(parentElement, isNavbar) {
+            const categoriesHeader = document.createElement('h5');
+            categoriesHeader.textContent = 'Categories';
+            if (isNavbar) {
+                categoriesHeader.classList.add('text-white', 'mt-2', 'ms-3');
+            }
+            parentElement.appendChild(categoriesHeader);
+
+            const ul = document.createElement('ul');
+            ul.className = isNavbar ? 'nav flex-column ms-3' : 'nav flex-column';
+
+            const allArticlesLi = document.createElement('li');
+            allArticlesLi.className = 'nav-item';
+            const allArticlesLink = document.createElement('a');
+            allArticlesLink.className = isNavbar ? 'nav-link text-white-50' : 'nav-link';
+            allArticlesLink.href = '#';
+            allArticlesLink.textContent = 'All Articles';
+            allArticlesLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                displayArticles(allArticlesData);
+                updateActiveCategoryLink(allArticlesLink);
+                updateActiveNavLink(navHomeLink); // 确保Home激活
+                if (isNavbar) closeNavbar();
+            });
+            allArticlesLi.appendChild(allArticlesLink);
+            ul.appendChild(allArticlesLi);
+
+            categories.sort().forEach(category => {
+                const li = document.createElement('li');
+                li.className = 'nav-item';
+                const link = document.createElement('a');
+                link.className = isNavbar ? 'nav-link text-white-50' : 'nav-link';
+                link.href = '#';
+                link.textContent = category;
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    displayArticlesByCategory(category);
+                    updateActiveCategoryLink(link);
+                    updateActiveNavLink(navHomeLink); // 确保Home激活
+                    if (isNavbar) closeNavbar();
+                });
+                li.appendChild(link);
+                ul.appendChild(li);
+            });
+            parentElement.appendChild(ul);
+        }
+
+        createListContent(sidebarCategoriesElement, false);
+        createListContent(navbarCategoriesElement, true);
+
+        // 默认激活 "All Articles" - 由 showAllArticlesAndActivateHome 统一处理
+    }
+
+    // --- 内容显示 ---
+
+    // 格式化日期
+    function formatDate(dateString) {
         const date = new Date(dateString);
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -113,36 +151,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${month}/${day}/${year}`;
     }
 
+    // 显示文章列表
     function displayArticles(articlesToDisplay) {
-        mainContentElement.innerHTML = ''; 
+        mainContentElement.innerHTML = '';
         const row = document.createElement('div');
         row.className = 'row g-4';
 
-        if (!articlesToDisplay || articlesToDisplay.length === 0) { // 添加 !articlesToDisplay 检查
+        if (!articlesToDisplay || articlesToDisplay.length === 0) {
             mainContentElement.innerHTML = "<p>No articles found.</p>";
             return;
         }
 
         articlesToDisplay.forEach(article => {
             const col = document.createElement('div');
-            col.className = 'col-12'; 
+            col.className = 'col-12';
 
             const card = document.createElement('div');
             card.className = 'card h-100';
 
-            let imageHtml = '';
-            if (article.image) { 
-                imageHtml = `<img src="${article.image}" class="card-img-top" alt="${article.title}" style="max-height: 200px; object-fit: cover;">`;
-            }
+            let imageHtml = article.image ? `<img src="${article.image}" class="card-img-top" alt="${article.title}" style="max-height: 200px; object-fit: cover;">` : '';
 
             let tagsHtml = '';
             if (article.tags && article.tags.length > 0) {
-                tagsHtml = '<div class="mb-3">'; // 用一个 div 包裹标签，并添加底部边距
-                article.tags.forEach(tag => {
-                    // 使用 Bootstrap badge 来创建小按钮样式
-                    tagsHtml += `<span class="badge bg-secondary me-1">${tag}</span>`;
-                });
-                tagsHtml += '</div>';
+                tagsHtml = '<div class="mb-3">' + article.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('') + '</div>';
             }
 
             card.innerHTML = `
@@ -150,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">${article.title}</h5>
                     <p class="card-text"><small class="text-muted">${formatDate(article.date_posted)}</small></p>
-                    <p class="card-text">${article.excerpt}</p> 
+                    <p class="card-text">${article.excerpt}</p>
                     ${tagsHtml}
                     <a href="#" class="btn btn-primary mt-auto view-article-btn" data-article-id="${article.id}">Read More</a>
                 </div>
@@ -165,16 +196,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 const articleId = e.target.dataset.articleId;
                 displaySingleArticle(parseInt(articleId));
-                if (navHomeLink) updateActiveNavLink(navHomeLink);
+                updateActiveNavLink(navHomeLink); // 查看文章详情时，保持Home激活
             });
         });
     }
 
+    // 按分类显示文章
     function displayArticlesByCategory(category) {
         const filteredArticles = allArticlesData.filter(article => article.category === category);
         displayArticles(filteredArticles);
     }
 
+    // 显示单篇文章
     function displaySingleArticle(articleId) {
         const article = allArticlesData.find(art => art.id === articleId);
         if (!article) {
@@ -184,135 +217,96 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let tagsHtml = '';
         if (article.tags && article.tags.length > 0) {
-            tagsHtml = '<div class="my-3">'; // 使用 my-3 添加垂直边距
-            tagsHtml += '<strong>Tags:</strong> '; // 添加一个 "Tags:" 标签头
-            article.tags.forEach(tag => {
-                // 使用与卡片视图相同的 Bootstrap badge 样式
-                tagsHtml += `<span class="badge bg-secondary me-1">${tag}</span>`;
-            });
-            tagsHtml += '</div>';
+            tagsHtml = '<div class="my-3"><strong>Tags:</strong> ' + article.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('') + '</div>';
         }
 
-        mainContentElement.innerHTML = '';                                                              
-        const articleWrapper = document.createElement('div');
-        articleWrapper.innerHTML = `
+        mainContentElement.innerHTML = `
             <h2 class="mt-3">${article.title}</h2>
             <p><small class="text-muted">By ${article.author} on ${formatDate(article.date_posted)}</small></p>
             ${article.image ? `<img src="${article.image}" class="img-fluid mb-3" alt="${article.title}">` : ''}
-            <div>${article.full_article.replace(/\n/g, '<br>')}</div> 
+            <div>${article.full_article.replace(/\n/g, '<br>')}</div>
             ${tagsHtml}
             <hr>
             <button class="btn btn-secondary mb-3" id="back-to-articles">Back to Articles</button>
         `;
-        mainContentElement.appendChild(articleWrapper);
-        
+
         document.getElementById('back-to-articles').addEventListener('click', () => {
-            const activeCategoryLink = sidebarCategoriesElement.querySelector('.nav-link.active');
+            // 查找当前激活的分类链接文本
+            const activeCategoryLink = document.querySelector('#sidebar-categories .nav-link.active, #navbar-categories .nav-link.active');
             if (activeCategoryLink && activeCategoryLink.textContent !== 'All Articles') {
                 displayArticlesByCategory(activeCategoryLink.textContent);
             } else {
                 displayArticles(allArticlesData);
             }
-            if (navHomeLink) updateActiveNavLink(navHomeLink); 
+            updateActiveNavLink(navHomeLink); // 确保Home激活
         });
     }
 
-if (navAboutLink) {
+    // --- 事件监听器 ---
+
+    // About 页面
+    if (navAboutLink) {
         navAboutLink.addEventListener('click', (e) => {
             e.preventDefault();
             mainContentElement.innerHTML = `
                 <div class="container mt-4">
-                    <h2>About This Project - Technical Overview</h2>
-                    <p>This news feed application is designed as a single-page application (SPA) to demonstrate front-end development skills.</p>
-                    
-                    <h4 class="mt-4">Core Technologies & Approaches:</h4>
-                    <ul>
-                        <li><strong>HTML5:</strong> Semantic structure for the web page.</li>
-                        <li><strong>Bootstrap 5.3:</strong> Used for responsive layout, styling, and UI components like the navigation bar, cards, and grid system. Custom CSS is kept озеро (minimal) to leverage Bootstrap's capabilities.</li>
-                        <li><strong>Vanilla JavaScript (ES6+):</strong> All dynamic functionalities are implemented using plain JavaScript without any external frontend frameworks (like React, Angular, or Vue) or jQuery, as per project requirements.</li>
-                        <li><strong>JSON Data Handling:</strong>
-                            <ul>
-                                <li>News articles are loaded dynamically from a local <code>news_updated.json</code> file.</li>
-                                <li>The <code>fetch()</code> API is used for asynchronous data retrieval.</li>
-                                <li>A Python script (<code>update_json_images.py</code>) was provided and utilized to preprocess the initial <code>news_feed.json</code>, ensuring image URLs are standardized and include dimensions, outputting to <code>news_updated.json</code>.</li>
-                            </ul>
-                        </li>
-                        <li><strong>Dynamic Content Rendering:</strong> JavaScript is used to:
-                            <ul>
-                                <li>Parse the fetched JSON data.</li>
-                                <li>Dynamically create and display category links in the sidebar.</li>
-                                <li>Render news articles as Bootstrap cards in the main content area. Each card includes a title, formatted date, excerpt, and image.</li>
-                                <li>Display a full article view when a card or "Read More" button is clicked.</li>
-                            </ul>
-                        </li>
-                        <li><strong>Single-Page Application (SPA) Behavior:</strong>
-                            <ul>
-                                <li>Navigation (to different categories, individual articles, About/Contact pages) is handled without full page reloads.</li>
-                                <li>Content in the main area is updated dynamically using JavaScript DOM manipulation.</li>
-                                <li>Event listeners manage user interactions.</li>
-                            </ul>
-                        </li>
-                        <li><strong>Responsive Design:</strong> The application layout adapts to different screen sizes, primarily leveraging Bootstrap's responsive grid and components.</li>
-                    </ul>
-
-                    <h4 class="mt-4">Key JavaScript Functions:</h4>
-                    <ul>
-                        <li><code>fetchNewsData()</code>: Loads and processes the initial news data.</li>
-                        <li><code>displayCategories()</code>: Populates the category sidebar.</li>
-                        <li><code>displayArticles()</code>: Renders a list of article cards.</li>
-                        <li><code>displaySingleArticle()</code>: Shows the detailed view of an article.</li>
-                        <li><code>formatDate()</code>: A utility function for date formatting.</li>
-                        <li><code>updateActiveNavLink()</code> & <code>updateActiveCategoryLink()</code>: Manage the active state of navigation links.</li>
-                    </ul>
-                    
-                    <p class="mt-4">The project structure includes <code>test.html</code> (main page), <code>script.js</code> (core logic), and <code>news_updated.json</code> (data source). Development was done using a local web server.</p>
-                </div>
+                    <h2>About This Project</h2>
+                    <p>This is a single-page news feed application built with HTML, Bootstrap 5, and Vanilla JavaScript.</p>
+                    </div>
             `;
-            updateActiveNavLink(navAboutLink); //确保About链接被设为激活状态
+            updateActiveNavLink(navAboutLink);
+            closeNavbar();
         });
-    } else {
-        console.error("About link not found. Check selector.");
     }
 
+    // Contact 页面
     if (navContactLink) {
         navContactLink.addEventListener('click', (e) => {
             e.preventDefault();
             mainContentElement.innerHTML = `
                 <div class="container mt-4">
                     <h2>Contact Us</h2>
-                    <p>If you have any questions or feedback, please feel free to reach out to me.</p>
                     <p>Email: jeffreyjr@vt.edu</p>
                     <p>Phone: 540-321-9708</p>
                 </div>
             `;
             updateActiveNavLink(navContactLink);
+            closeNavbar();
         });
-    } else {
-        console.error("Contact link not found. Check selector.");
-    }
-    
-    function showAllArticlesAndActivateHome() {
-        displayArticles(allArticlesData);
-        if (navHomeLink) updateActiveNavLink(navHomeLink);
-        const allArticlesCatLink = sidebarCategoriesElement.querySelector('.nav-item:first-child .nav-link'); 
-        if(allArticlesCatLink) updateActiveCategoryLink(allArticlesCatLink);
     }
 
+    // 显示主页 (所有文章) 并激活 Home & All Articles
+    function showAllArticlesAndActivateHome() {
+        displayArticles(allArticlesData);
+        updateActiveNavLink(navHomeLink); // 这会调用 updateActiveCategoryLink 设置默认
+    }
+
+    // 点击 Brand Logo
     if (navbarBrandLink) {
         navbarBrandLink.addEventListener('click', (e) => {
             e.preventDefault();
             showAllArticlesAndActivateHome();
+            closeNavbar(); // <-- 添加关闭
         });
     }
 
+    // 点击 Home 链接
     if (navHomeLink) {
         navHomeLink.addEventListener('click', (e) => {
             e.preventDefault();
             showAllArticlesAndActivateHome();
+            closeNavbar(); // <-- 添加关闭
         });
-    } else {
-        console.error("Home link not found for event listener. Check selector.");
     }
 
+    // --- Welcome Section Hiding ---
+    if (startButton && welcomeSection) {
+        startButton.addEventListener('click', () => {
+            console.log("Start button clicked, hiding welcome section."); // 可以加一行输出来确认
+            welcomeSection.style.display = 'none';
+        });
+    }
+
+    // --- 启动 ---
     fetchNewsData();
 });
