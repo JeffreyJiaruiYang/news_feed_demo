@@ -49,5 +49,6 @@ Here are the steps to run the application:
     Once the server is running, navigate to the local address (like `http://localhost:8000`) in your web browser to view and interact with the News Feed Web App.
 
 
-![image](https://github.com/user-attachments/assets/66327f50-c042-4ed1-a63a-605fbb57ffa3)
+![image](https://github.com/user-attachments/assets/0795a659-9e6e-4797-adf3-9a9bc4ae1f4e)
+
 
