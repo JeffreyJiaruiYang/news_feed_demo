@@ -29,48 +29,56 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a href="#" class="nav-link">Home</a>
+                        <a href="#" class="nav-link" id="nav-home">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">About</a>
+                        <a href="#" class="nav-link" id="nav-about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">Contact</a>
+                        <a href="#" class="nav-link" id="nav-contact">Contact</a>
                     </li>
                 </ul>
+
+                <hr class="d-lg-none text-white-50">
+                <div id="navbar-categories" class="d-lg-none">
+                </div>
             </div>
+        </div>
         </div>
     </nav>
 
     <section id="welcome-section">
-        <div class="container p-5 bg-dark text-light text-center text-sm-start rounded-3 mt-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1>
-                        Welcome to <span class="text-primary">The Daily News Feed</span>
-                    </h1>
-                    <p class="my-4">
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Itaque harum illum ratione, quos
-                        dignissimos aliquid iste eius soluta cupiditate. Sit fuga eum eligendi necessitatibus, dicta
-                        culpa
-                        magnam illum eius quibusdam. Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga quam,
-                        voluptas iure obcaecati hic architecto sint exercitationem, ad, laborum minima quod eos eius
-                        maxime!
-                        Blanditiis consequuntur nulla tempora dignissimos doloremque.
-                    </p>
-                    <button class="btn btn-primary btn-lg" id="start-button">
-                        start
-                    </button>
+        <div class="container mt-4">
+            <div class="p-5 bg-dark text-light text-center text-sm-start rounded-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1>
+                            Welcome to <span class="text-primary">The Daily News Feed</span>
+                        </h1>
+                        <p class="my-4">
+                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Itaque harum illum ratione, quos
+                            dignissimos aliquid iste eius soluta cupiditate. Sit fuga eum eligendi necessitatibus, dicta
+                            culpa
+                            magnam illum eius quibusdam. Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga
+                            quam,
+                            voluptas iure obcaecati hic architecto sint exercitationem, ad, laborum minima quod eos eius
+                            maxime!
+                            Blanditiis consequuntur nulla tempora dignissimos doloremque.
+                        </p>
+                        <button class="btn btn-primary btn-lg" id="start-button">
+                            start
+                        </button>
+                    </div>
+                    <img src="./img/welcome.svg" alt="welcome" class="w-25 img-fluid d-none d-md-block"
+                        id="welcome-image">
                 </div>
-                <img src="./img/welcome.svg" alt="welcome" class="w-25 img-fluid d-none d-md-block" id="welcome-image">
             </div>
         </div>
-
     </section>
 
     <div class="container mt-4 mb-5 flex-grow-1">
         <div class="row">
-            <div class="col-lg-3" id="sidebar-categories">
+            <div class="col-lg-3 d-none d-lg-block" id="sidebar-categories">
             </div>
 
             <div class="col-lg-9" id="main-content">
