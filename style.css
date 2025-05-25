@@ -1,37 +1,63 @@
 /* Global Styles */
 body {
-    font-family: 'Share', sans-serif; /* 应用 'Share' 字体到整个网页 */
-    font-weight: 400;                 /* 默认使用常规字重 (400) */
-    line-height: 1.6;                 /* 建议设置一个舒适的行高 */
+    font-family: 'Share', sans-serif; 
+    font-weight: 400;                
+    line-height: 1.6;                
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Share', sans-serif; /* 确保标题也使用 'Share' 字体 */
-    font-weight: 700;                 /* 默认使用粗体字重 (700) - 你已在Google Fonts链接中请求此字重 */
-}
-
-/*
-   如果需要，你可以在这里为Bootstrap组件添加特定的字体覆盖。
-   例如，如果按钮没有继承 'Share' 字体:
-*/
-/*
-.btn {
     font-family: 'Share', sans-serif;
-}
-*/
-
-/*
-   你还可以为斜体和粗斜体创建实用工具类，
-   因为你在Google Fonts链接中也请求了这些样式:
-*/
-/*
-.font-italic {
-    font-style: italic;
+    font-weight: 700; 
 }
 
-.font-bold-italic {
-    font-style: italic;
-    font-weight: 700;
+/* Custom Active Link Styling - Add a Box */
+
+/* Base style for nav links to reserve space for border */
+.navbar .navbar-nav .nav-link,
+#sidebar-categories .nav-link,
+#navbar-categories .nav-link {
+    border: 1px solid transparent; /* Transparent border by default */
+    border-radius: 0.3rem; /* Consistent rounded corners */
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; /* Smooth transition */
 }
-*/
+
+/* Main Navbar Links (Home, About, Contact) */
+.navbar .navbar-nav .nav-link {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+    line-height: 1; /* Adjust line height */
+}
+
+/* Navbar Category Links (Small Screens) - Adjust padding */
+#navbar-categories .nav-link {
+    display: inline-block;
+    margin-bottom: 0.2rem;
+    padding: 0.3rem 0.6rem;
+}
+
+
+/* --- Active State Styling --- */
+
+/* Main Navbar Links (Home, About, Contact) - Active */
+.navbar .navbar-nav .nav-link.active {
+    border-color: rgba(255, 255, 255, 0.6); /* White border for dark navbar */
+    background-color: rgba(255, 255, 255, 0.1); /* Slight background hint */
+}
+
+/* Sidebar Category Links - Active */
+#sidebar-categories .nav-link.active {
+    border-color: #0d6efd; /* Bootstrap primary color */
+    background-color: #e7f1ff; /* Light blue background */
+    color: #0a58ca; /* Darker blue text for better contrast */
+    font-weight: 500; /* Slightly bolder */
+}
+
+/* Navbar Category Links (Small Screens) - Active */
+#navbar-categories .nav-link.active {
+    border-color: rgba(255, 255, 255, 0.6); /* White border for dark navbar */
+    background-color: rgba(255, 255, 255, 0.1); /* Slight background hint */
+    color: #fff; /* Ensure text is white */
+}
