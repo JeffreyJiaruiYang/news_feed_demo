@@ -1,22 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 获取 DOM 元素
+    // sidebar for categories
+    // only show when screen size is large
     const sidebarCategoriesElement = document.getElementById('sidebar-categories');
+
+    // main content
     const mainContentElement = document.getElementById('main-content');
+
+    //brand
     const navbarBrandLink = document.querySelector('.navbar-brand');
+
+    // navbar
     const navHomeLink = document.getElementById('nav-home');
     const navAboutLink = document.getElementById('nav-about');
     const navContactLink = document.getElementById('nav-contact');
-    const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link'); // 获取所有主导航链接
+    const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link'); // for all links in navbar
+
+    // sidebar
     const navbarCategoriesElement = document.getElementById('navbar-categories');
 
     //welcome section
     const welcomeSection = document.getElementById('welcome-section');
     const startButton = document.getElementById('start-button');
 
-    // 存储文章数据
+    // all articles data
     let allArticlesData = [];
 
-    // --- 数据获取 ---
+    // fetch news data from JSON file
     async function fetchNewsData() {
         try {
             const response = await fetch('news_updated.json');
@@ -25,8 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const data = await response.json();
             allArticlesData = data.articles;
-            displayCategories(allArticlesData); // 显示分类
-            showAllArticlesAndActivateHome(); // 默认显示主页内容
+            displayCategories(allArticlesData); // display categories
+            showAllArticlesAndActivateHome(); // default to show home
 
         } catch (error) {
             console.error("Could not fetch news data:", error);
@@ -34,9 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 导航栏与侧边栏 ---
+    // --- Nav bar and side bar ---
 
-    // 关闭导航栏 (汉堡菜单)
+    // close navbar
     function closeNavbar() {
         const navbarToggler = document.querySelector('.navbar-toggler');
         const navbarCollapse = document.getElementById('navbarNav');
@@ -45,27 +54,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 更新主导航链接激活状态
+    // active link in navbar(home contact about)
     function updateActiveNavLink(activeLink) {
         mainNavLinks.forEach(link => link.classList.remove('active'));
         if (activeLink) {
             activeLink.classList.add('active');
         }
-
+        // check if the active link is not the home link
+        // if not, remove active class from all category links
         if (activeLink !== navHomeLink) {
             updateActiveCategoryLink(null);
-        } else {
-            const isAnyCategoryActive = document.querySelector('#sidebar-categories .nav-link.active, #navbar-categories .nav-link.active');
-            if (isAnyCategoryActive === null && allArticlesData.length > 0) {
-                const allArticlesCatLink = document.querySelector('#sidebar-categories .nav-item:first-child .nav-link');
-                if (allArticlesCatLink) {
-                    updateActiveCategoryLink(allArticlesCatLink);
-                }
-            }
         }
     }
 
-    // 更新分类链接激活状态 (处理两个位置)
+    // update active link in sidebar and navbar
     function updateActiveCategoryLink(activeLink) {
         const allCategoryLinks = document.querySelectorAll('#sidebar-categories .nav-link, #navbar-categories .nav-link');
         allCategoryLinks.forEach(link => link.classList.remove('active'));
@@ -80,10 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 显示分类列表 (在侧边栏和导航栏)
+    // show category (both sidebar and navbar)
     function displayCategories(articles) {
         sidebarCategoriesElement.innerHTML = '';
-        navbarCategoriesElement.innerHTML = ''; // 清空两个区域
+        navbarCategoriesElement.innerHTML = ''; // clear previous content
 
         const categories = [...new Set(articles.map(article => article.category))];
 
@@ -108,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 displayArticles(allArticlesData);
                 updateActiveCategoryLink(allArticlesLink);
-                updateActiveNavLink(navHomeLink); // 确保Home激活
+                updateActiveNavLink(navHomeLink);
                 if (isNavbar) closeNavbar();
             });
             allArticlesLi.appendChild(allArticlesLink);
@@ -125,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.preventDefault();
                     displayArticlesByCategory(category);
                     updateActiveCategoryLink(link);
-                    updateActiveNavLink(navHomeLink); // 确保Home激活
+                    updateActiveNavLink(navHomeLink);
                     if (isNavbar) closeNavbar();
                 });
                 li.appendChild(link);
@@ -136,13 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         createListContent(sidebarCategoriesElement, false);
         createListContent(navbarCategoriesElement, true);
-
-        // 默认激活 "All Articles" - 由 showAllArticlesAndActivateHome 统一处理
+        // default to show all articles which is managed by showAllArticlesAndActivateHome
     }
 
-    // --- 内容显示 ---
+    // --- content ---
 
-    // 格式化日期
+    // format date
     function formatDate(dateString) {
         const date = new Date(dateString);
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -151,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${month}/${day}/${year}`;
     }
 
-    // 显示文章列表
+    // show articles list
     function displayArticles(articlesToDisplay) {
         mainContentElement.innerHTML = '';
         const row = document.createElement('div');
@@ -196,18 +197,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 const articleId = e.target.dataset.articleId;
                 displaySingleArticle(parseInt(articleId));
-                updateActiveNavLink(navHomeLink); // 查看文章详情时，保持Home激活
+                updateActiveNavLink(navHomeLink); // when click article, make sure Home is active
             });
         });
     }
 
-    // 按分类显示文章
+    // show articles by category
     function displayArticlesByCategory(category) {
         const filteredArticles = allArticlesData.filter(article => article.category === category);
         displayArticles(filteredArticles);
     }
 
-    // 显示单篇文章
+    // show single article
     function displaySingleArticle(articleId) {
         const article = allArticlesData.find(art => art.id === articleId);
         if (!article) {
@@ -231,20 +232,20 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         document.getElementById('back-to-articles').addEventListener('click', () => {
-            // 查找当前激活的分类链接文本
+            // find the active category link
             const activeCategoryLink = document.querySelector('#sidebar-categories .nav-link.active, #navbar-categories .nav-link.active');
             if (activeCategoryLink && activeCategoryLink.textContent !== 'All Articles') {
                 displayArticlesByCategory(activeCategoryLink.textContent);
             } else {
                 displayArticles(allArticlesData);
             }
-            updateActiveNavLink(navHomeLink); // 确保Home激活
+             updateActiveNavLink(navHomeLink); // make sure Home is active
         });
     }
 
-    // --- 事件监听器 ---
+    // --- Lisener for nav bar ---
 
-    // About 页面
+    // About
     if (navAboutLink) {
         navAboutLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -259,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Contact 页面
+    // Contact
     if (navContactLink) {
         navContactLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -275,38 +276,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 显示主页 (所有文章) 并激活 Home & All Articles
+    // 1. show all articles
+    // 2. activate navbar
+    // 3. activate category
     function showAllArticlesAndActivateHome() {
+        // show content
         displayArticles(allArticlesData);
-        updateActiveNavLink(navHomeLink); // 这会调用 updateActiveCategoryLink 设置默认
+
+        // update navbar
+        updateActiveNavLink(navHomeLink); // set Home as active
+
+
+        // update category
+        const allCategoryLinks = document.querySelectorAll('#sidebar-categories .nav-link, #navbar-categories .nav-link');
+        let allArticlesLinkToActivate = null;
+        // find the "All Articles" link in both sidebar and navbar
+        allCategoryLinks.forEach(link => {
+            if (link.textContent === 'All Articles') {
+                allArticlesLinkToActivate = link;
+                return;
+            }
+        });
+
+        // if find use updateActiveCategoryLink
+        if (allArticlesLinkToActivate) {
+            updateActiveCategoryLink(allArticlesLinkToActivate);
+        }
     }
 
-    // 点击 Brand Logo
+    // brand
     if (navbarBrandLink) {
         navbarBrandLink.addEventListener('click', (e) => {
             e.preventDefault();
             showAllArticlesAndActivateHome();
-            closeNavbar(); // <-- 添加关闭
+            closeNavbar();
         });
     }
 
-    // 点击 Home 链接
+    // Home 
     if (navHomeLink) {
         navHomeLink.addEventListener('click', (e) => {
             e.preventDefault();
             showAllArticlesAndActivateHome();
-            closeNavbar(); // <-- 添加关闭
+            closeNavbar();
         });
     }
 
     // --- Welcome Section Hiding ---
     if (startButton && welcomeSection) {
         startButton.addEventListener('click', () => {
-            console.log("Start button clicked, hiding welcome section."); // 可以加一行输出来确认
             welcomeSection.style.display = 'none';
         });
     }
 
-    // --- 启动 ---
+    // --- start ---
     fetchNewsData();
 });
