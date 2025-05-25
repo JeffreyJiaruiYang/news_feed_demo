@@ -4,19 +4,11 @@
 
 This is a simple, responsive single-page News Feed application. It dynamically loads and displays news articles from a provided JSON file (`news.json` or `news_updated.json`).
 
-## Features
+## Live Demo
 
-* Displays a main news article page.
-* Includes category pages showing lists of articles belonging to that category.
-* Dynamically loads news data from a JSON file using the `fetch()` API.
-* Uses Bootstrap Cards to display articles on category pages.
-* Features a responsive layout suitable for various screen sizes.
-* Includes basic navigation (Home, About, Contact) and a header with a site title.
-* Clicking on the site title or "Home" link displays all articles.
-* Clicking on a category link in the sidebar filters articles by that category.
-* Clicking "Read More" on an article card displays the full article content.
-* "About" and "Contact" pages display static informational content.
-* Active navigation links (both main navigation and category sidebar) are visually highlighted.
+You can view the live version of this News Feed Web App here:
+
+**[https://jeffreyjiaruiyang.github.io/news_feed_demo/](https://jeffreyjiaruiyang.github.io/news_feed_demo/)**
 
 ## Technologies Used
 
@@ -28,6 +20,8 @@ This is a simple, responsive single-page News Feed application. It dynamically l
 ## How to Run
 
 This application **must be run using a local web server**. This is because it uses the `fetch()` API to load the `news_updated.json` file, and most browsers block `fetch()` requests for local files (`file://`) due to security restrictions (CORS policy).
+
+If you want see the demo directly, use https://jeffreyjiaruiyang.github.io/news_feed_demo/
 
 Here are the steps to run the application:
 
@@ -49,6 +43,34 @@ Here are the steps to run the application:
 
 4.  **View the App:**
     Once the server is running, navigate to the local address (like `http://localhost:8000`) in your web browser to view and interact with the News Feed Web App.
+
+
+## Features
+
+A concise overview of the News Feed Web App's capabilities:
+
+### Data & Display
+
+* **Dynamic Loading:** Asynchronously loads news data from `news_updated.json` using the `Workspace()` API.
+* **Article Cards:** Renders news items as Bootstrap cards, featuring images, titles, formatted dates, and excerpts.
+* **Full Article View:** Displays the complete article content upon clicking "Read More", including author, source, full text, and tags.
+
+### Navigation & Interaction
+
+* **Responsive Categories:** Features a category list that acts as a sidebar on desktops and collapses into the top navbar menu on smaller screens.
+* **Category Filtering:** Enables users to view articles belonging to a specific category by clicking its link.
+* **Main Navigation:** Provides standard "Home", "About", and "Contact" links.
+* **Active State Highlighting:** Visually indicates the current active main navigation link and category with a border.
+* **Back Button:** Allows easy navigation from a single article back to the article list.
+* **Auto-Close Navbar:** The mobile (hamburger) menu automatically closes after a selection.
+
+### UI & Experience
+
+* **Welcome Section:** Greets users with an introductory section that can be dismissed.
+* **Responsive Design:** Leverages Bootstrap 5.3 for a layout that adapts seamlessly to various screen sizes.
+* **Favicon:** Includes a site icon for the browser tab.
+* **Custom Font:** Utilizes the 'Share' Google Font for a distinct visual style.
+
 
 
 
