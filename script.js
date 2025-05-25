@@ -221,12 +221,18 @@ document.addEventListener('DOMContentLoaded', () => {
             tagsHtml = '<div class="my-3"><strong>Tags:</strong> ' + article.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('') + '</div>';
         }
 
+        let sourceHtml = '';
+        if (article.source) {
+            sourceHtml = `<p><small class="text-muted">Source: ${article.source}</small></p>`;
+        }
+
         mainContentElement.innerHTML = `
             <h2 class="mt-3">${article.title}</h2>
             <p><small class="text-muted">By ${article.author} on ${formatDate(article.date_posted)}</small></p>
             ${article.image ? `<img src="${article.image}" class="img-fluid mb-3" alt="${article.title}">` : ''}
             <div>${article.full_article.replace(/\n/g, '<br>')}</div>
             ${tagsHtml}
+            ${sourceHtml}
             <hr>
             <button class="btn btn-secondary mb-3" id="back-to-articles">Back to Articles</button>
         `;
